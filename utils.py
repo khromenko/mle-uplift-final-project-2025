@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklift.metrics import uplift_by_percentile
+from sklift.metrics import qini_curve, perfect_qini_curve 
+from sklift.metrics import uplift_curve, perfect_uplift_curve
+
 
 def custom_uplift_by_percentile(y_true, uplift, treatment, 
                                kind='line', bins=10, string_percentiles=True, 
@@ -110,3 +113,49 @@ def custom_uplift_by_percentile(y_true, uplift, treatment,
     # оптимизируем расположение элементов на графике
     plt.tight_layout()
     return fig
+
+def plot_qini_curve(y_true, pred_uplift, treat_true):
+    res_model = qini_curve(y_true, pred_uplift, treat_true)
+    res_perfect = perfect_qini_curve(y_true, treat_true) # Идеальная модель
+
+    # 2. Строим график через обычный matplotlib
+    plt.figure(figsize=(7, 5))
+
+    # Кривая нашей модели
+    plt.plot(res_model[0], res_model[1], label='Learner', color='blue', lw=2)
+
+    # Кривая идеального выбора
+    plt.plot(res_perfect[0], res_perfect[1], label='Perfect Model', color='green', lw=2)
+
+    # Кривая случайного выбора (Random Baseline)
+    plt.plot([0, res_model[0][-1]], [0, res_model[1][-1]], label='Random Baseline', color='orange', lw=1)
+
+    plt.title('Qini Curve (sklift metrics)')
+    plt.xlabel('Number of targeted customers')
+    plt.ylabel('Cumulative Number of Incremental Outcomes')
+    plt.legend(loc='upper right')
+    plt.grid(True)
+    plt.show()
+
+def plot_uplift_curve(y_true, pred_uplift, treat_true):
+    curve_model = uplift_curve(y_true, pred_uplift, treat_true)
+    curve_perfect = perfect_uplift_curve(y_true, treat_true)
+
+    # 2. Строим график вручную
+    plt.figure(figsize=(7, 5))
+
+    # Кривая вашей модели
+    plt.plot(curve_model[0], curve_model[1], label='Learner', color='blue', lw=2)
+
+    # Кривая идеального выбора (Perfect)
+    plt.plot(curve_perfect[0], curve_perfect[1], label='Perfect Model', color='green', lw=2)
+
+    # Кривая случайного выбора (Random Baseline)
+    plt.plot([0, curve_model[0][-1]], [0, curve_model[1][-1]], label='Random Baseline', color='orange', lw=1)
+
+    plt.title('Uplift Curve (sklift metrics)')
+    plt.xlabel('Number of targeted customers')
+    plt.ylabel('Cumulative Incremental Outcome')
+    plt.legend(loc='upper right')
+    plt.grid(True)
+    plt.show()
