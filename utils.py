@@ -5,7 +5,6 @@ from sklift.metrics import qini_curve, perfect_qini_curve
 from sklift.metrics import uplift_curve, perfect_uplift_curve
 from sklift.metrics import uplift_auc_score, qini_auc_score, uplift_at_k
 
-
 def custom_uplift_by_percentile(y_true, uplift, treatment, 
                                kind='line', bins=10, string_percentiles=True, 
                                figsize=(10, 6), title=None):
@@ -164,3 +163,23 @@ def plot_uplift_curve(y_true, pred_uplift, treat_true, axs):
     axs.legend(loc='upper right', fontsize=fsize_main)
     axs.grid(True)
     axs.get_figure().show()
+
+
+def calc_uplift_metics(y_true, pred_uplift, treat_true):
+    '''
+    Расчет uplift метрик с использованием библиотеки sklift.metrics
+        - uplift_auc
+        - qini_auc
+        - uplift_at_30
+    '''
+
+    uplift_auc = uplift_auc_score(y_true=y_true, uplift=pred_uplift, treatment=treat_true)
+    qini_auc = qini_auc_score(y_true=y_true, uplift=pred_uplift, treatment=treat_true)
+    uplift_at_30 = uplift_at_k(y_true=y_true, uplift=pred_uplift, treatment=treat_true, k=0.3, strategy='overall')
+
+    metrics = {
+        'uplift_auc': uplift_auc.round(4),
+        'qini_auc': qini_auc.round(4),
+        'uplift_at_30': uplift_at_30.round(4)
+        }
+    return metrics
