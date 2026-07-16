@@ -3,6 +3,7 @@ import numpy as np
 from sklift.metrics import uplift_by_percentile
 from sklift.metrics import qini_curve, perfect_qini_curve 
 from sklift.metrics import uplift_curve, perfect_uplift_curve
+from sklift.metrics import uplift_auc_score, qini_auc_score, uplift_at_k
 
 
 def custom_uplift_by_percentile(y_true, uplift, treatment, 
@@ -114,48 +115,52 @@ def custom_uplift_by_percentile(y_true, uplift, treatment,
     plt.tight_layout()
     return fig
 
-def plot_qini_curve(y_true, pred_uplift, treat_true):
+def plot_qini_curve(y_true, pred_uplift, treat_true, axs: plt.Axes):
     res_model = qini_curve(y_true, pred_uplift, treat_true)
     res_perfect = perfect_qini_curve(y_true, treat_true) # Идеальная модель
 
-    # 2. Строим график через обычный matplotlib
-    plt.figure(figsize=(7, 5))
+    qini_auc = qini_auc_score(y_true=y_true, uplift=pred_uplift, treatment=treat_true)
 
-    # Кривая нашей модели
-    plt.plot(res_model[0], res_model[1], label='Learner', color='blue', lw=2)
+    fsize_main = 12
+
+    # Кривая модели
+    axs.plot(res_model[0], res_model[1], label=f'Learner (qini_auc = {qini_auc:.2f})', color='blue', lw=2)
 
     # Кривая идеального выбора
-    plt.plot(res_perfect[0], res_perfect[1], label='Perfect Model', color='green', lw=2)
+    axs.plot(res_perfect[0], res_perfect[1], label='Perfect Model', color='green', lw=2)
 
     # Кривая случайного выбора (Random Baseline)
-    plt.plot([0, res_model[0][-1]], [0, res_model[1][-1]], label='Random Baseline', color='orange', lw=1)
+    axs.plot([0, res_model[0][-1]], [0, res_model[1][-1]], label='Random Baseline', color='orange', lw=1)
 
-    plt.title('Qini Curve (sklift metrics)')
-    plt.xlabel('Number of targeted customers')
-    plt.ylabel('Cumulative Number of Incremental Outcomes')
-    plt.legend(loc='upper right')
-    plt.grid(True)
-    plt.show()
+    axs.set_title('Qini Curve (sklift metrics)', fontsize=fsize_main+2)
+    axs.set_xlabel('Number of targeted customers', fontsize=fsize_main)
+    axs.set_ylabel('Cumulative number of incremental outcomes', fontsize=fsize_main)
+    axs.tick_params(labelsize=fsize_main)
+    axs.legend(loc='upper right', fontsize=fsize_main)
+    axs.grid(True)
+    axs.get_figure().show()
 
-def plot_uplift_curve(y_true, pred_uplift, treat_true):
+def plot_uplift_curve(y_true, pred_uplift, treat_true, axs):
     curve_model = uplift_curve(y_true, pred_uplift, treat_true)
     curve_perfect = perfect_uplift_curve(y_true, treat_true)
 
-    # 2. Строим график вручную
-    plt.figure(figsize=(7, 5))
-
-    # Кривая вашей модели
-    plt.plot(curve_model[0], curve_model[1], label='Learner', color='blue', lw=2)
+    uplift_auc = uplift_auc_score(y_true=y_true, uplift=pred_uplift, treatment=treat_true)
+    
+    fsize_main = 12
+    
+    # Кривая модели
+    axs.plot(curve_model[0], curve_model[1], label=f'Learner (uplift_auc = {uplift_auc:.2f})', color='blue', lw=2)
 
     # Кривая идеального выбора (Perfect)
-    plt.plot(curve_perfect[0], curve_perfect[1], label='Perfect Model', color='green', lw=2)
+    axs.plot(curve_perfect[0], curve_perfect[1], label='Perfect Model', color='green', lw=2)
 
     # Кривая случайного выбора (Random Baseline)
-    plt.plot([0, curve_model[0][-1]], [0, curve_model[1][-1]], label='Random Baseline', color='orange', lw=1)
+    axs.plot([0, curve_model[0][-1]], [0, curve_model[1][-1]], label='Random Baseline', color='orange', lw=1)
 
-    plt.title('Uplift Curve (sklift metrics)')
-    plt.xlabel('Number of targeted customers')
-    plt.ylabel('Cumulative Incremental Outcome')
-    plt.legend(loc='upper right')
-    plt.grid(True)
-    plt.show()
+    axs.set_title('Uplift Curve (sklift metrics)', fontsize=fsize_main+2)
+    axs.set_xlabel('Number of targeted customers', fontsize=fsize_main)
+    axs.set_ylabel('Cumulative Incremental Outcome', fontsize=fsize_main)
+    axs.tick_params(labelsize=fsize_main)
+    axs.legend(loc='upper right', fontsize=fsize_main)
+    axs.grid(True)
+    axs.get_figure().show()
