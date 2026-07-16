@@ -2,3 +2,5 @@
 .env
 __pycache__
 models/baseline/tlearner
+models/r_learner_model/rlearner
+models/uplift_tree_model/uplift-rf
