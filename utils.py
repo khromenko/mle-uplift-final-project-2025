@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import pandas as pd
 import numpy as np
 from sklift.metrics import uplift_by_percentile
 from sklift.metrics import qini_curve, perfect_qini_curve 
@@ -183,3 +184,31 @@ def calc_uplift_metics(y_true, pred_uplift, treat_true):
         'uplift_at_30': uplift_at_30.round(4)
         }
     return metrics
+
+def build_joint_metrics(joint_metrics, model_name, model_metrics):
+    # baseline metrics
+    baseline = joint_metrics.loc['baseline']
+    base_uplift_auc = baseline['uplift_auc']
+    base_qini_auc = baseline['qini_auc']
+    base_uplift_at_30 = baseline['uplift_at_30']
+
+    # add new model
+    new_metrics = pd.DataFrame([model_metrics], index=[model_name])
+    joint_metrics = pd.concat([joint_metrics, new_metrics])
+
+    # recalc delta
+    joint_metrics['uplift_auc_delta'] = joint_metrics.apply(lambda row: (row['uplift_auc']-base_uplift_auc)/base_uplift_auc, axis=1)
+    joint_metrics['qini_auc_delta'] = joint_metrics.apply(lambda row: (row['qini_auc']-base_qini_auc)/base_qini_auc, axis=1)
+    joint_metrics['uplift_at_30_delta'] = joint_metrics.apply(lambda row: (row['uplift_at_30']-base_uplift_at_30)/base_uplift_at_30, axis=1)
+
+    return joint_metrics
+
+def plot_metrics_compare(joint_metrics: pd.DataFrame):
+    ''' 
+    plot bar-chart to compare metrics for different model
+    '''
+
+    plt.style.use('default')
+    metric_names = ['uplift_auc', 'qini_auc', 'uplift_at_30']
+    joint_metrics[metric_names].T.plot.bar(grid='True', title='Metrics compare')
+    plt.tight_layout()
