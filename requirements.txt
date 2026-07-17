@@ -13,10 +13,10 @@ numpy==2.2.6
 optuna==4.4.0
 pandas==2.3.1
 plotly==5.20.0
-scikit-learn==1.6.1
+scikit-learn==1.6.1 # scikit-learn==1.5.2 for xgboost compat errors
 scikit-uplift==0.5.1
 scipy==1.15.2
 seaborn==0.13.2
 shap==0.45.0
 statsmodels==0.14.5
-xgboost==2.0.3
+xgboost==2.0.3 #causalml 0.15.5 requires scikit-learn>=1.6.0, but you have scikit-learn 1.5.2 which is incompatible.
