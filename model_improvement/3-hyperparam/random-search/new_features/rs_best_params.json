@@ -1,0 +1,15 @@
+{
+    "propensity_model__n_estimators": 50.0,
+    "propensity_model__max_depth": 5.0,
+    "propensity_model__learning_rate": 0.04,
+    "propensity_model__l2_leaf_reg": 25.0,
+    "outcome_model__n_estimators": 300.0,
+    "outcome_model__max_depth": 5.0,
+    "outcome_model__learning_rate": 0.03,
+    "outcome_model__l2_leaf_reg": 10.0,
+    "effect_model__random_strength": 2.0,
+    "effect_model__n_estimators": 50.0,
+    "effect_model__max_depth": 3.0,
+    "effect_model__learning_rate": 0.03,
+    "effect_model__l2_leaf_reg": 15.0
+}

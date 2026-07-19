@@ -5,6 +5,8 @@ from sklift.metrics import uplift_by_percentile
 from sklift.metrics import qini_curve, perfect_qini_curve 
 from sklift.metrics import uplift_curve, perfect_uplift_curve
 from sklift.metrics import uplift_auc_score, qini_auc_score, uplift_at_k
+import os
+import json
 
 def custom_uplift_by_percentile(y_true, uplift, treatment, 
                                kind='line', bins=10, string_percentiles=True, 
@@ -165,6 +167,29 @@ def plot_uplift_curve(y_true, pred_uplift, treat_true, axs):
     axs.grid(True)
     axs.get_figure().show()
 
+def plot_and_save_uplift_curves(y_true, pred_uplift, treat_true, dir_name):
+    '''
+    plot qini-curve, uplift-curve and uplift-by-percentile 
+    and save images to path = 'dir_name' with file names as 
+    - 'qini_uplift_curves.png' - for qini and uplift curves
+    - 'custom_uplift_by_percentile.png' - for bar chart with uplift percentiles
+    '''
+
+    # plot curves
+    fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+    plot_qini_curve(y_true, pred_uplift, treat_true, axs=axs[0])
+    plot_uplift_curve(y_true, pred_uplift, treat_true, axs=axs[1])
+    plt.tight_layout()
+
+    # plot percentiles
+    fig2 = custom_uplift_by_percentile(y_true, pred_uplift, treat_true, kind='bar')
+
+    # check dir
+    os.makedirs(dir_name, exist_ok=True)
+    
+    # save image
+    fig.savefig(f'{dir_name}/qini_uplift_curves.png')    
+    fig2.savefig(f'{dir_name}/custom_uplift_by_percentile.png')
 
 def calc_uplift_metics(y_true, pred_uplift, treat_true):
     '''
@@ -185,7 +210,32 @@ def calc_uplift_metics(y_true, pred_uplift, treat_true):
         }
     return metrics
 
+def calc_and_save_uplift_metrics(y_true, pred_uplift, treat_true, dir_name) -> dict:
+    '''
+    calc uplift metrics - qini-score, uplift-score, uplift@30%
+    and save them to a file with path = 'dir_name' and name 'metrics.json' 
+
+    return  
+        metrics dict
+        {
+            'uplift_auc': float, 
+            'qini_auc': float, 
+            'uplift_at_30': float
+        } 
+    '''
+    # calc metrics
+    metrics = calc_uplift_metics(y_true, pred_uplift, treat_true)
+    
+    # save to file
+    save_json_artifact(metrics, dir_name, 'metrics.json')
+
+    return metrics
+
+
 def build_joint_metrics(joint_metrics, model_name, model_metrics):
+    '''
+    add new model metrics to existing joint metrics dataframe
+    '''
     # baseline metrics
     baseline = joint_metrics.loc['baseline']
     base_uplift_auc = baseline['uplift_auc']
@@ -212,3 +262,15 @@ def plot_metrics_compare(joint_metrics: pd.DataFrame):
     metric_names = ['uplift_auc', 'qini_auc', 'uplift_at_30']
     joint_metrics[metric_names].T.plot.bar(grid='True', title='Metrics compare')
     plt.tight_layout()
+
+def save_json_artifact(dict_data, dir_name, file_name): 
+    '''
+    save dict artifact to json-file with path = 'dir_name' and file name = 'file_name' 
+    '''
+
+    # check dir
+    os.makedirs(dir_name, exist_ok=True)
+
+    # write file
+    with open(f'{dir_name}/{file_name}', 'w', encoding='UTF-8') as f:
+        json.dump(dict_data, f, indent=4)
