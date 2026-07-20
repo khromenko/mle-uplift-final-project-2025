@@ -1,0 +1,15 @@
+{
+    "out_n_estimators": 100,
+    "out_max_depth": 5,
+    "out_learning_rate": 0.08,
+    "out_l2_leaf_reg": 8.0,
+    "eff_n_estimators": 150,
+    "eff_max_depth": 5,
+    "eff_learning_rate": 0.02,
+    "eff_l2_leaf_reg": 15.0,
+    "eff_random_strength": 1.5,
+    "prop_n_estimators": 150,
+    "prop_max_depth": 5,
+    "prop_learning_rate": 0.03,
+    "prop_l2_leaf_reg": 30.0
+}

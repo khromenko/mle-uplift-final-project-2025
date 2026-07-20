@@ -1,0 +1,5 @@
+{
+    "uplift_auc": 0.0235,
+    "qini_auc": 0.0482,
+    "uplift_at_30": 0.0535
+}
