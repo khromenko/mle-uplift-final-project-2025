@@ -19,7 +19,11 @@
         - S3_BUCKET_NAME=/s3-student-mle-20260306-f5465b0629-freetrack/Sprint-5/Project
         - AWS_ACCESS_KEY_ID=YCAJE3Nlz8iDILW5VTYM1ihQB
         - AWS_SECRET_ACCESS_KEY=<...>
+    - mlflow server
+        - TRACKING_SERVER_HOST=127.0.0.1
+        - TRACKING_SERVER_PORT=5000
 
+Необходимо скопировать файле .env_template в файл .env и проверить, что все переменные заполнены
 
 # Подготовка виртуальной машины
 
@@ -99,9 +103,6 @@ python -m venv .venv_mle-uplift-final-project-2025
 pip install -r requirements.txt
 ```
 
-TODO - нужна ли кастомизированная под Яндекс.Практикум версия scikit-uplift, которая была локально использована в 5-м Спринте? 
-- попробуем сначала обойтись штатной версией ..
-
 ### Установить пакеты для MLflow (опциональная часть)
 
 В проекте рекомендуется логировать результаты экспериментов в Mlflow, поэтому необходимо установить соответсвующие библиотеки
@@ -126,4 +127,7 @@ pip install -r requirements_mlflow.txt
 
 # Полезный код
 
-в `utils.py` лежит код, который может помочь вам при выполнении проекта
+- `utils.py` - код, который может помочь вам при выполнении проекта
+- `mlflow_utils.py` - вспомогательные методы для работы с mlflow
+- `optuna_utils.py` - вспомогательные методы для работы с optuna
+
