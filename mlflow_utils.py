@@ -2,6 +2,17 @@ import mlflow
 from dotenv import load_dotenv
 import os, shutil
 
+class PyfuncModelWrapper(mlflow.pyfunc.PythonModel):
+    '''
+    Обертка для causalml моделей, чтобы залогировать в MLflow как pyfunc, так как в mlflow нет штатной поддержки causalml-моделей
+    '''
+
+    def load_context(self, context):
+        self.model = mlflow.sklearn.load_model(context.artifacts["model-dump"])
+
+    def predict(self, context, model_input):
+        return self.model.predict(model_input)
+
 def init_mlflow(clean_model_dump_directory: str | None = None):
     '''
     connect to mlflow server with url and env vars - http://{TRACKING_SERVER_HOST}:{TRACKING_SERVER_PORT}
@@ -32,3 +43,19 @@ def init_mlflow(clean_model_dump_directory: str | None = None):
             shutil.rmtree(local_model_path)
     
     return mlflow_client
+
+
+
+def dump_model(model, local_dir):
+    '''
+    dump non-sklearn model (e.g. casualml) as universal mlflow.sklearn pyfunc model,
+    so that it can be then logged to mlflow as pyfunc-model
+
+    return 
+        mlflow_model_artifacts - artifacts for dumped model to be passed to mlflow pyfunc.log_model()
+    '''
+    local_model_path = f'{local_dir}/model-dump'
+    mlflow.sklearn.save_model(sk_model=model, path=local_model_path)
+    
+    mlflow_model_artifacts = {"model-dump": local_model_path}
+    return mlflow_model_artifacts
