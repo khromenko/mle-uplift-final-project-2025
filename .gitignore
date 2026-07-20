@@ -1,8 +1,6 @@
 .venv_mle-uplift-final-project-2025
 .env
 __pycache__
-models/baseline/tlearner
-models/r_learner_model/rlearner
-models/uplift_tree_model/uplift-rf
+model-dump
 catboost_info
 model_improvement/3-hyperparam/optuna/optuna.study.db

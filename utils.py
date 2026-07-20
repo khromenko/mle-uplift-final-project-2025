@@ -263,7 +263,7 @@ def plot_metrics_compare(joint_metrics: pd.DataFrame):
     joint_metrics[metric_names].T.plot.bar(grid='True', title='Metrics compare')
     plt.tight_layout()
 
-def save_json_artifact(dict_data, dir_name, file_name): 
+def save_json_artifact(dict_data: dict, dir_name: str, file_name: str): 
     '''
     save dict artifact to json-file with path = 'dir_name' and file name = 'file_name' 
     '''
@@ -274,3 +274,36 @@ def save_json_artifact(dict_data, dir_name, file_name):
     # write file
     with open(f'{dir_name}/{file_name}', 'w', encoding='UTF-8') as f:
         json.dump(dict_data, f, indent=4)
+
+def load_json_file(dir_name: str, file_name) -> dict: 
+    '''
+    load arbitrary json file from path = 'dir_name'/'file_name'
+    '''
+
+    with open(f'{dir_name}/{file_name}', 'r', encoding='UTF-8') as f:
+        json_data = json.load(f)
+    
+    #TODO: check file exist or exception 
+
+    return json_data
+
+def load_model_metrics_artifact(dir_name: str) -> dict: 
+    '''
+    load model 'metrics.json' file from path = 'dir_name'
+    
+    see also - file could be previously created via calc_and_save_uplift_metrics()
+    '''
+
+    metrics = load_json_file(dir_name, 'metrics.json')
+    return metrics
+
+def save_model_params_artifact(params: dict, dir_name: str) -> dict: 
+    save_json_artifact(params, dir_name, 'params.json')
+
+def load_model_params_artifact(dir_name: str) -> dict: 
+    '''
+    load model 'params.json' file from path = 'dir_name'
+    '''
+
+    params = load_json_file(dir_name, 'params.json')
+    return params
